@@ -1,7 +1,10 @@
 module Clock exposing (main)
 
 import Browser
-import Html exposing (Html, span, text)
+import Html exposing (Html, div, span, text)
+import Html.Attributes exposing (style)
+import Svg
+import Svg.Attributes
 import Task
 import Time
 
@@ -11,12 +14,12 @@ import Time
 
 
 type alias Model =
-    { time : Time.Posix, zone : Time.Zone }
+    { time : Time.Posix, zone : Time.Zone, show : Bool }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { time = Time.millisToPosix 0, zone = Time.utc }, Task.perform AdjustTimeZone Time.here )
+    ( { time = Time.millisToPosix 0, zone = Time.utc, show = False }, Task.perform AdjustTimeZone Time.here )
 
 
 
@@ -32,7 +35,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         UpdateTime newTime ->
-            ( { model | time = newTime }, Cmd.none )
+            ( { model | time = newTime, show = True }, Cmd.none )
 
         AdjustTimeZone newZone ->
             ( { model | zone = newZone }, Cmd.none )
@@ -51,8 +54,8 @@ atleastTwoDigits n =
         String.fromInt n
 
 
-view : Model -> Html Msg
-view model =
+viewDigital : Model -> Html Msg
+viewDigital model =
     let
         hour =
             atleastTwoDigits (Time.toHour model.zone model.time)
@@ -70,6 +73,77 @@ view model =
         , text ":"
         , text secs
         ]
+
+
+drawCircle : Float -> Float -> Float -> Svg.Svg Msg
+drawCircle cx cy r =
+    let
+        ( cxStr, cyStr, rStr ) =
+            ( String.fromFloat cx, String.fromFloat cy, String.fromFloat r )
+    in
+    Svg.circle [ Svg.Attributes.cx cxStr, Svg.Attributes.cy cyStr, Svg.Attributes.r rStr, Svg.Attributes.fill "#000000" ] []
+
+
+drawHand : Float -> Float -> Float -> Float -> String -> Float -> Svg.Svg Msg
+drawHand cx cy length strokeWidth color angle =
+    let
+        handX =
+            String.fromFloat (cx + length * cos (degrees angle))
+
+        handY =
+            String.fromFloat (cy + length * sin (degrees angle))
+
+        ( cxStr, cyStr ) =
+            ( String.fromFloat cx, String.fromFloat cy )
+
+        strokeWidthStr =
+            String.fromFloat strokeWidth
+    in
+    Svg.line
+        [ Svg.Attributes.x1 cxStr
+        , Svg.Attributes.y1 cxStr
+        , Svg.Attributes.x2 handX
+        , Svg.Attributes.y2 handY
+        , Svg.Attributes.stroke color
+        , Svg.Attributes.strokeWidth strokeWidthStr
+        ]
+        []
+
+
+viewAnalog : Model -> Html Msg
+viewAnalog model =
+    let
+        ( cx, cy, r ) =
+            ( 50, 50, 45 )
+
+        hour =
+            Time.toHour model.zone model.time
+
+        mins =
+            Time.toMinute model.zone model.time
+
+        secs =
+            Time.toSecond model.zone model.time
+    in
+    Svg.svg [ Svg.Attributes.viewBox "0 0 100 100", Svg.Attributes.width "500px" ]
+        [ drawCircle cx cy r
+        , drawHand cx cy 30 2 "#154a01" (toFloat hour * (360 / 12) - 90)
+        , drawHand cx cy 40 1 "#023963" (toFloat mins * (360 / 60) - 90)
+        , drawHand cx cy 51 0.5 "#730b03" (toFloat secs * (360 / 60) - 90)
+        ]
+
+
+view : Model -> Html Msg
+view model =
+    if model.show then
+        div
+            [ style "width" "800px"
+            , style "margin" "0 auto"
+            ]
+            [ viewAnalog model, viewDigital model ]
+
+    else
+        div [] []
 
 
 
