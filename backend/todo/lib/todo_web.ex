@@ -30,7 +30,7 @@ defmodule TodoWeb do
   def view do
     quote do
       use Phoenix.View,
-        root: "lib/backend_web/templates",
+        root: "lib/todo_web/templates",
         namespace: TodoWeb
 
       # Import convenience functions from controllers
