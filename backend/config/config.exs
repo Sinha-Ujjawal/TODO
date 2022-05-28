@@ -8,14 +8,15 @@
 import Config
 
 config :backend,
-  ecto_repos: [Backend.Repo]
+  namespace: Todo,
+  ecto_repos: [Todo.Repo]
 
 # Configures the endpoint
-config :backend, BackendWeb.Endpoint,
+config :backend, TodoWeb.Endpoint,
   url: [host: "localhost"],
-  render_errors: [view: BackendWeb.ErrorView, accepts: ~w(html json), layout: false],
-  pubsub_server: Backend.PubSub,
-  live_view: [signing_salt: "fGaWFVA5"]
+  render_errors: [view: TodoWeb.ErrorView, accepts: ~w(html json), layout: false],
+  pubsub_server: Todo.PubSub,
+  live_view: [signing_salt: "ilwmM2We"]
 
 # Configures the mailer
 #
@@ -24,7 +25,7 @@ config :backend, BackendWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :backend, Backend.Mailer, adapter: Swoosh.Adapters.Local
+config :backend, Todo.Mailer, adapter: Swoosh.Adapters.Local
 
 # Swoosh API client is needed for adapters other than SMTP.
 config :swoosh, :api_client, false

@@ -1,5 +1,5 @@
-defmodule BackendWeb.PageControllerTest do
-  use BackendWeb.ConnCase
+defmodule TodoWeb.PageControllerTest do
+  use TodoWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")

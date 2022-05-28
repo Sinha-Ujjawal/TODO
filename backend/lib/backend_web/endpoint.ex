@@ -1,4 +1,4 @@
-defmodule BackendWeb.Endpoint do
+defmodule TodoWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :backend
 
   # The session will be stored in the cookie and signed,
@@ -7,7 +7,7 @@ defmodule BackendWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_backend_key",
-    signing_salt: "8ncCCg7t"
+    signing_salt: "UfynqbZR"
   ]
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
@@ -46,5 +46,5 @@ defmodule BackendWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug BackendWeb.Router
+  plug TodoWeb.Router
 end

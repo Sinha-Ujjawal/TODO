@@ -1,4 +1,4 @@
-defmodule Backend.MixProject do
+defmodule Todo.MixProject do
   use Mix.Project
 
   def project do
@@ -19,7 +19,7 @@ defmodule Backend.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Backend.Application, []},
+      mod: {Todo.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end

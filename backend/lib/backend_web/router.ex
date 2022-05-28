@@ -1,11 +1,11 @@
-defmodule BackendWeb.Router do
-  use BackendWeb, :router
+defmodule TodoWeb.Router do
+  use TodoWeb, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, {BackendWeb.LayoutView, :root}
+    plug :put_root_layout, {TodoWeb.LayoutView, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -14,14 +14,14 @@ defmodule BackendWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", BackendWeb do
+  scope "/", TodoWeb do
     pipe_through :browser
 
     get "/", PageController, :index
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", BackendWeb do
+  # scope "/api", TodoWeb do
   #   pipe_through :api
   # end
 
@@ -38,7 +38,7 @@ defmodule BackendWeb.Router do
     scope "/" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: BackendWeb.Telemetry
+      live_dashboard "/dashboard", metrics: TodoWeb.Telemetry
     end
   end
 

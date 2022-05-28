@@ -1,3 +1,3 @@
-defmodule BackendWeb.PageView do
-  use BackendWeb, :view
+defmodule TodoWeb.PageView do
+  use TodoWeb, :view
 end

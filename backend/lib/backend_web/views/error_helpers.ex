@@ -1,4 +1,4 @@
-defmodule BackendWeb.ErrorHelpers do
+defmodule TodoWeb.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -39,9 +39,9 @@ defmodule BackendWeb.ErrorHelpers do
     # should be written to the errors.po file. The :count option is
     # set by Ecto and indicates we should also apply plural rules.
     if count = opts[:count] do
-      Gettext.dngettext(BackendWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(TodoWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(BackendWeb.Gettext, "errors", msg, opts)
+      Gettext.dgettext(TodoWeb.Gettext, "errors", msg, opts)
     end
   end
 end

@@ -1,3 +1,3 @@
-defmodule Backend.Mailer do
+defmodule Todo.Mailer do
   use Swoosh.Mailer, otp_app: :backend
 end
