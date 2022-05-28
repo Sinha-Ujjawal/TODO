@@ -1,4 +1,4 @@
-module Clock exposing (main)
+module SimpleElements.Clock exposing (main)
 
 import Browser
 import Html exposing (Html)

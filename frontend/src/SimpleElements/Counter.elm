@@ -1,4 +1,4 @@
-module Counter exposing (main)
+module SimpleElements.Counter exposing (main)
 
 import Browser
 import Html exposing (Html, button, div, text)

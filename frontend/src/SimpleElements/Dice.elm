@@ -1,4 +1,4 @@
-module Dice exposing (main)
+module SimpleElements.Dice exposing (main)
 
 import Browser
 import Html exposing (Html)
