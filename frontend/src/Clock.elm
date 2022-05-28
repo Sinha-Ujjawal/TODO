@@ -1,8 +1,8 @@
 module Clock exposing (main)
 
 import Browser
-import Html exposing (Html, div, span, text)
-import Html.Attributes exposing (style)
+import Html exposing (Html)
+import Html.Attributes
 import Svg
 import Svg.Attributes
 import Task
@@ -19,7 +19,12 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { time = Time.millisToPosix 0, zone = Time.utc, show = False }, Task.perform AdjustTimeZone Time.here )
+    ( { time = Time.millisToPosix 0
+      , zone = Time.utc
+      , show = False
+      }
+    , Task.perform AdjustTimeZone Time.here
+    )
 
 
 
@@ -66,12 +71,12 @@ viewDigital model =
         secs =
             atleastTwoDigits (Time.toSecond model.zone model.time)
     in
-    span []
-        [ text hour
-        , text ":"
-        , text mins
-        , text ":"
-        , text secs
+    Html.span []
+        [ Html.text hour
+        , Html.text ":"
+        , Html.text mins
+        , Html.text ":"
+        , Html.text secs
         ]
 
 
@@ -81,13 +86,21 @@ drawCircle cx cy r =
         ( cxStr, cyStr, rStr ) =
             ( String.fromFloat cx, String.fromFloat cy, String.fromFloat r )
     in
-    Svg.circle [ Svg.Attributes.cx cxStr, Svg.Attributes.cy cyStr, Svg.Attributes.r rStr, Svg.Attributes.fill "#000000" ] []
+    Svg.circle
+        [ Svg.Attributes.cx cxStr
+        , Svg.Attributes.cy cyStr
+        , Svg.Attributes.r rStr
+        , Svg.Attributes.fill "#000000"
+        ]
+        []
 
 
 drawHand : Float -> Float -> Float -> Float -> String -> Float -> Svg.Svg Msg
 drawHand cx cy length strokeWidth color turns =
     let
-        angle = 2 * pi * (turns - 0.25)
+        angle =
+            2 * pi * (turns - 0.25)
+
         handX =
             String.fromFloat (cx + length * cos angle)
 
@@ -138,14 +151,14 @@ viewAnalog model =
 view : Model -> Html Msg
 view model =
     if model.show then
-        div
-            [ style "width" "800px"
-            , style "margin" "0 auto"
+        Html.div
+            [ Html.Attributes.style "width" "800px"
+            , Html.Attributes.style "margin" "0 auto"
             ]
             [ viewAnalog model, viewDigital model ]
 
     else
-        div [] []
+        Html.div [] []
 
 
 
