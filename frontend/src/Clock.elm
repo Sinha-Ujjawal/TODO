@@ -85,13 +85,14 @@ drawCircle cx cy r =
 
 
 drawHand : Float -> Float -> Float -> Float -> String -> Float -> Svg.Svg Msg
-drawHand cx cy length strokeWidth color angle =
+drawHand cx cy length strokeWidth color turns =
     let
+        angle = 2 * pi * (turns - 0.25)
         handX =
-            String.fromFloat (cx + length * cos (degrees angle))
+            String.fromFloat (cx + length * cos angle)
 
         handY =
-            String.fromFloat (cy + length * sin (degrees angle))
+            String.fromFloat (cy + length * sin angle)
 
         ( cxStr, cyStr ) =
             ( String.fromFloat cx, String.fromFloat cy )
@@ -101,11 +102,12 @@ drawHand cx cy length strokeWidth color angle =
     in
     Svg.line
         [ Svg.Attributes.x1 cxStr
-        , Svg.Attributes.y1 cxStr
+        , Svg.Attributes.y1 cyStr
         , Svg.Attributes.x2 handX
         , Svg.Attributes.y2 handY
         , Svg.Attributes.stroke color
         , Svg.Attributes.strokeWidth strokeWidthStr
+        , Svg.Attributes.strokeLinecap "round"
         ]
         []
 
@@ -127,9 +129,9 @@ viewAnalog model =
     in
     Svg.svg [ Svg.Attributes.viewBox "0 0 100 100", Svg.Attributes.width "500px" ]
         [ drawCircle cx cy r
-        , drawHand cx cy 30 2 "#154a01" (toFloat hour * (360 / 12) - 90)
-        , drawHand cx cy 40 1 "#023963" (toFloat mins * (360 / 60) - 90)
-        , drawHand cx cy 51 0.5 "#730b03" (toFloat secs * (360 / 60) - 90)
+        , drawHand cx cy 30 2 "#154a01" (toFloat hour / 12)
+        , drawHand cx cy 40 1 "#023963" (toFloat mins / 60)
+        , drawHand cx cy 42 0.5 "#730b03" (toFloat secs / 60)
         ]
 
 
