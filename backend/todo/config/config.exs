@@ -13,9 +13,9 @@ config :todo,
 # Configures the endpoint
 config :todo, TodoWeb.Endpoint,
   url: [host: "localhost"],
-  render_errors: [view: TodoWeb.ErrorView, accepts: ~w(html json), layout: false],
+  render_errors: [view: TodoWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: Todo.PubSub,
-  live_view: [signing_salt: "dharpsEw"]
+  live_view: [signing_salt: "yOu31Rk/"]
 
 # Configures the mailer
 #
@@ -28,16 +28,6 @@ config :todo, Todo.Mailer, adapter: Swoosh.Adapters.Local
 
 # Swoosh API client is needed for adapters other than SMTP.
 config :swoosh, :api_client, false
-
-# Configure esbuild (the version is required)
-config :esbuild,
-  version: "0.14.0",
-  default: [
-    args:
-      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
-    cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
-  ]
 
 # Configures Elixir's Logger
 config :logger, :console,

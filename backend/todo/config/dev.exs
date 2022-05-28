@@ -22,11 +22,8 @@ config :todo, TodoWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "LWIG6RNYygdDbqDQqhAW3kw7QlEu/HQ4VLZVHPfcMjsDrgrfovKH4gGIFXTVaPMK",
-  watchers: [
-    # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
-  ]
+  secret_key_base: "LtmHBOdKAm4ov+HhMSRPox0KX8dYshp8/2AsQufaARgidvd8Zj4zLAZMkym4QdJM",
+  watchers: []
 
 # ## SSL Support
 #
@@ -51,17 +48,6 @@ config :todo, TodoWeb.Endpoint,
 # If desired, both `http:` and `https:` keys can be
 # configured to run both http and https servers on
 # different ports.
-
-# Watch static and templates for browser reloading.
-config :todo, TodoWeb.Endpoint,
-  live_reload: [
-    patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
-      ~r"lib/todo_web/(live|views)/.*(ex)$",
-      ~r"lib/todo_web/templates/.*(eex)$"
-    ]
-  ]
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
