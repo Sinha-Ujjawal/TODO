@@ -7,6 +7,7 @@ defmodule TodoWeb.Router do
 
   scope "/api", TodoWeb do
     pipe_through :api
+    resources "/todos", TodoItemController, except: [:new, :edit]
   end
 
   # Enables LiveDashboard only for development
