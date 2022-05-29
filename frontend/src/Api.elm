@@ -1,4 +1,4 @@
-module Api exposing (Todo, TodosResult(..), addTodo, getTodos)
+module Api exposing (Todo, GotTodo, GotTodos, addTodo, getTodos)
 
 import Http
 import Json.Decode as D exposing (Decoder, int, string)
@@ -41,20 +41,18 @@ todosDecoder =
     D.list todoDecoder
 
 
-type TodosResult
-    = GotTodos (Result Http.Error (List Todo))
-    | GotTodo (Result Http.Error Todo)
+type alias GotTodos = Result Http.Error (List Todo)
+type alias GotTodo = Result Http.Error Todo
 
-
-getTodos : String -> Cmd TodosResult
+getTodos : String -> Cmd GotTodos
 getTodos baseUrl =
     Http.get
         { url = baseUrl ++ "/todos"
-        , expect = Http.expectJson GotTodos (unwrapResponse todosDecoder)
+        , expect = Http.expectJson (\x -> x) (unwrapResponse todosDecoder)
         }
 
 
-addTodo : String -> String -> String -> Cmd TodosResult
+addTodo : String -> String -> String -> Cmd GotTodo
 addTodo baseUrl title detail =
     let
         data =
@@ -64,5 +62,5 @@ addTodo baseUrl title detail =
     Http.post
         { url = baseUrl ++ "/todos"
         , body = Http.jsonBody data
-        , expect = Http.expectJson GotTodo (unwrapResponse todoDecoder)
+        , expect = Http.expectJson (\x -> x) (unwrapResponse todoDecoder)
         }

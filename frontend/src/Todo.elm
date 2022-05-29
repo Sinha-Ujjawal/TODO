@@ -5,7 +5,7 @@ import Browser
 import Html exposing (Html)
 import Html.Attributes exposing (style)
 import Html.Events
-import Time
+import HttpErrorHelper exposing (httpErrToString)
 
 
 
@@ -25,6 +25,7 @@ type alias Model =
     { baseUrl : String
     , todos : List Api.Todo
     , newTodoMaybe : Maybe NewTodo
+    , error : Maybe String
     }
 
 
@@ -33,6 +34,7 @@ init _ =
     ( { baseUrl = "http://localhost:4000/api"
       , todos = []
       , newTodoMaybe = Nothing
+      , error = Nothing
       }
     , getTodos "http://localhost:4000/api"
     )
@@ -67,8 +69,8 @@ renderTodo { title, detail } =
         ]
 
 
-view : Model -> Html Msg
-view { todos, newTodoMaybe } =
+showNewTodoForm : Maybe NewTodo -> Html Msg
+showNewTodoForm newTodoMaybe =
     case newTodoMaybe of
         Just newTodo ->
             let
@@ -76,8 +78,7 @@ view { todos, newTodoMaybe } =
                     newTodo.title == "" || newTodo.detail == ""
             in
             Html.div []
-                [ Html.div [] (List.map renderTodo todos)
-                , Html.form
+                [ Html.form
                     [ Html.Events.onSubmit (AddNewTodo newTodo) ]
                     [ Html.div [] [ Html.input [ Html.Attributes.value newTodo.title, Html.Events.onInput (UpdateTitleNewTodo newTodo) ] [] ]
                     , Html.div [] [ Html.textarea [ Html.Attributes.value newTodo.detail, Html.Events.onInput (UpdateDetailNewTodo newTodo) ] [] ]
@@ -87,10 +88,34 @@ view { todos, newTodoMaybe } =
                 ]
 
         Nothing ->
-            Html.div []
-                [ Html.div [] (List.map renderTodo todos)
-                , Html.button [ Html.Events.onClick NewTodoForm ] [ Html.text "Create New Todo" ]
-                ]
+            Html.div [] [ Html.button [ Html.Events.onClick NewTodoForm ] [ Html.text "Create New Todo" ] ]
+
+
+viewNormal : Model -> Html Msg
+viewNormal { todos, newTodoMaybe } =
+    Html.div []
+        [ Html.div [] (List.map renderTodo todos)
+        , showNewTodoForm newTodoMaybe
+        , Html.div [] [ Html.button [ Html.Events.onClick LoadTodos ] [ Html.text "Refresh" ] ]
+        ]
+
+
+showError : Model -> Html Msg
+showError { error } =
+    case error of
+        Nothing ->
+            Html.text ""
+
+        Just err ->
+            Html.div [ style "color" "red" ] [ Html.text ("*" ++ err) ]
+
+
+view : Model -> Html Msg
+view model =
+    Html.div []
+        [ viewNormal model
+        , showError model
+        ]
 
 
 
@@ -105,7 +130,8 @@ type Msg
     | DiscardNewTodo NewTodo
     | UpdateTitleNewTodo NewTodo String
     | UpdateDetailNewTodo NewTodo String
-    | NewTodoAdded Api.Todo
+    | AppendToTodos Api.Todo
+    | Error String
     | NoOp
 
 
@@ -116,7 +142,7 @@ update msg model =
             ( model, getTodos model.baseUrl )
 
         UpdateTodos newTodos ->
-            ( { model | todos = newTodos }, Cmd.none )
+            ( { model | todos = newTodos, error = Nothing }, Cmd.none )
 
         NewTodoForm ->
             ( { model | newTodoMaybe = Just emptyNewTodo }, Cmd.none )
@@ -133,8 +159,11 @@ update msg model =
         UpdateDetailNewTodo newTodo detail ->
             ( { model | newTodoMaybe = Just { newTodo | detail = detail } }, Cmd.none )
 
-        NewTodoAdded newTodo ->
-            ( { model | todos = model.todos ++ [ newTodo ] }, Cmd.none )
+        AppendToTodos todo ->
+            ( { model | todos = model.todos ++ [ todo ], error = Nothing }, Cmd.none )
+
+        Error err ->
+            ( { model | error = Just err }, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
@@ -143,14 +172,14 @@ update msg model =
 getTodos : String -> Cmd Msg
 getTodos baseUrl =
     let
-        convert : Api.TodosResult -> Msg
-        convert todoResult =
-            case todoResult of
-                Api.GotTodos (Ok todos) ->
+        convert : Api.GotTodos -> Msg
+        convert todosResult =
+            case todosResult of
+                Ok todos ->
                     UpdateTodos todos
 
-                _ ->
-                    UpdateTodos []
+                Err err ->
+                    Error (httpErrToString err)
     in
     Api.getTodos baseUrl
         |> Cmd.map convert
@@ -159,14 +188,14 @@ getTodos baseUrl =
 addTodo : String -> String -> String -> Cmd Msg
 addTodo baseUrl title detail =
     let
-        convert : Api.TodosResult -> Msg
+        convert : Api.GotTodo -> Msg
         convert todoResult =
             case todoResult of
-                Api.GotTodo (Ok todo) ->
-                    NewTodoAdded todo
+                Ok todo ->
+                    AppendToTodos todo
 
-                _ ->
-                    NoOp
+                Err err ->
+                    Error (httpErrToString err)
     in
     Api.addTodo baseUrl title detail
         |> Cmd.map convert
@@ -178,7 +207,7 @@ addTodo baseUrl title detail =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Time.every 5000 (\_ -> LoadTodos)
+    Sub.none
 
 
 main : Program () Model Msg
